@@ -1,0 +1,105 @@
+/* Refinements from Marvin Schwaibold's widget study. Geist and the 8px system remain. */
+html body { background: #f8f8f7; }
+body main.mx-auto { max-width: 1168px; padding: 48px 24px 32px; }
+body main > header.flex { margin-bottom: 32px; padding: 0; align-items: center; }
+body main > header h1.font-editorial { font-size: 32px; line-height: 40px; letter-spacing: -.045em; }
+body main > header .eyebrow { font-weight: 400; color: #80837d; text-transform: none; letter-spacing: 0; }
+.header-divider { padding: 0 8px; color: #c1c3bc; }
+body section.grid { gap: 24px; align-items: start; }
+body .card { min-width: 0; padding: 24px; border-radius: 24px; background-color: #fff; backdrop-filter: none; }
+body .card .eyebrow { font-weight: 500; text-transform: none; letter-spacing: 0; color: #878b84; }
+body .card .display { font-size: 24px; line-height: 32px; letter-spacing: -.035em; }
+body .card .body-copy { font-size: 15px; line-height: 24px; }
+body .card .icon-button { border: 0; }
+body .card[aria-labelledby="music-title"] { height: 232px; min-height: 0; }
+body .card[aria-labelledby="music-title"] > div > div:first-child { margin-bottom: 16px; }
+body #playButton { width: 40px; height: 40px; }
+body .card[aria-labelledby="music-title"] .noise { width: 64px; height: 64px; border-radius: 16px; box-shadow: inset 0 0 0 1px #00000008,0 4px 8px #00000008; }
+body .card[aria-labelledby="focus-title"] { height: 232px; min-height: 0; background: radial-gradient(ellipse at 20% 0%,#353731,#20221e 65%); }
+body .card[aria-labelledby="focus-title"] > div { gap: 16px; }
+body #focus-title { font-size: 15px; line-height: 24px; color: #d5d8d0; }
+body #focusDial { height: 136px; width: 136px; box-shadow: 0 0 0 8px #ffffff03; }
+body #focusDial > div { height: 112px; width: 112px; background: #23251f; z-index: 1; }
+#focusDial::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: repeating-conic-gradient(from 0deg,#a5ad9555 0deg 1deg,transparent 1deg 6deg); mask: radial-gradient(circle,transparent 65%,#000 66%); }
+body #timerButton { margin-top: 16px; background: #dee6d0; }
+body #timer { font-weight: 400; }
+body .card[aria-labelledby="flight-title"] { height: 232px; min-height: 0; }
+body .card[aria-labelledby="flight-title"] > div:first-child { gap: 8px; margin-bottom: 24px; }
+body .card[aria-labelledby="flight-title"] > div:first-child > span { font-size: 12px; padding: 4px 8px; white-space: nowrap; }
+body .card[aria-labelledby="flight-title"] .timeline { background-image: repeating-linear-gradient(90deg,#dce3dc 0 4px,white 4px 8px); }
+body .card[aria-labelledby="flight-title"] > div:last-child { margin-top:16px; }
+body .card[aria-labelledby="location-title"] { height: 248px; min-height: 0; background: #e8efea; color: #354d50; }
+body .coastal-map { opacity: 1; }
+body .card[aria-labelledby="location-title"]::before { content:''; position:absolute; inset:0; background:linear-gradient(#f7faf8e8,transparent 50%,#f5f8f2dd); z-index:1; }
+body .card[aria-labelledby="location-title"] .eyebrow { color: #71827a !important; }
+body .card[aria-labelledby="location-title"] .body-copy,
+body .card[aria-labelledby="location-title"] .mt-auto { color:#647974; }
+body .card[aria-labelledby="location-title"] .rounded-full { background:#ffffffb3; }
+body .card[aria-labelledby="location-title"] .fill-white { fill:#688d91; }
+body .card[aria-labelledby="weather-title"] { height: 248px; min-height:0; color: white; background:radial-gradient(ellipse at 92% -12%,#e8f0f3aa,transparent 48%),linear-gradient(125deg,#85aec8,#9dbdd3); border-color:#8fadc433; }
+body #weather-title { font-size: 40px; line-height: 48px; font-weight: 400; letter-spacing: -.05em; }
+body .card[aria-labelledby="weather-title"] .eyebrow, body .card[aria-labelledby="weather-title"] .text-muted { color:#f5faff; }
+body .card[aria-labelledby="weather-title"] .body-copy { font-size:12px; line-height:16px; }
+body .card[aria-labelledby="weather-title"] svg { color: #fff; }
+body .card[aria-labelledby="weather-title"] .grid svg { margin-top:8px; margin-bottom:8px; }
+body .card[aria-labelledby="weather-title"] > div:last-child { margin-top: 24px; padding-top:16px; border-color:#ffffff33; }
+body .card[aria-labelledby="stories-title"] { height:256px; min-height:0; }
+body .card[aria-labelledby="stories-title"] > div:first-child { margin-bottom:8px; }
+body #stories-title { font-size:15px; line-height:24px; }
+body .card[aria-labelledby="stories-title"] a { padding:8px 0; gap:8px; }
+body .card[aria-labelledby="stories-title"] a > span:first-child { width:32px; height:32px; border-radius:8px; }
+body .card[aria-labelledby="stories-title"] a > span:last-child > span:first-child { font-size:12px; line-height:16px; }
+body .card[aria-labelledby="stories-title"] a > span:last-child > span:last-child { font-size:12px; line-height:16px; margin-top:0; }
+body .card[aria-labelledby="inbox-title"] { height:288px; min-height:0; }
+body .inbox-item { padding:8px 0; gap:8px; border-radius:8px; }
+body .card[aria-labelledby="inbox-title"] .space-y-1 { display:grid; gap:0; }
+body .card .inbox-item { margin:0; line-height:16px; }
+body .inbox-item strong { line-height:20px; }
+body .inbox-item > span:first-child { width:32px; height:32px; }
+body .card[aria-labelledby="note-title"] { height:248px; min-height:0; background:#fffdf7; }
+body #quickNote { margin-top:16px; min-height:0; max-height:144px; overflow-y:auto; font-size:24px; line-height:32px; }
+body #draftBadge { background:#f4edb8; border:0; color:#867939; }
+body .card[aria-labelledby="mood-title"] { height:288px; min-height:0; grid-column:auto; }
+body .card[aria-labelledby="mood-title"] > div:first-child { margin-bottom:16px; }
+body .card[aria-labelledby="mood-title"] > .grid { height:160px; grid-template-rows:repeat(2,minmax(0,1fr)); }
+body .card[aria-labelledby="mood-title"] > .grid > div:first-child { grid-row:auto; }
+body .card[aria-labelledby="mood-title"] > .grid > .grid { display:contents; }
+body .card[aria-labelledby="mood-title"] img { min-height:0; }
+.collection-count { font-size:12px; color:#93968e; font-variant-numeric:tabular-nums; }
+.demo-caption { font-size:12px; line-height:16px; color:#888d85; }
+body #location-title { font-size:24px; line-height:32px; max-width:280px; }
+body #locationDetail { font-size:12px; line-height:16px; margin-top:8px; }
+.location-actions p { font-size:12px; line-height:16px; margin:0 0 8px; max-width:280px; }
+.location-controls { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+#locateButton { border:1px solid #ffffff99; border-radius:24px; padding:8px 16px; background:#fff; color:#354d50; font-size:12px; font-weight:500; min-height:32px; }
+#locateButton:disabled { opacity:.6; cursor:wait; }
+#locationLink { font-size:12px; text-decoration:underline; text-underline-offset:3px; color:#354d50; }
+#locationMap { position:absolute; inset:0; z-index:0; }
+#locationMap iframe { width:100%; height:100%; border:0; }
+.map-attribution { position:absolute; z-index:20; right:8px; bottom:4px; background:#ffffffed; color:#354d50; font-size:12px; line-height:16px; padding:0 4px; }
+body .has-location .coastal-map { display:none; }
+body .card.has-location::before { background:linear-gradient(#f8faf5ed,transparent 55%,#f8faf5f5 84%); pointer-events:none; }
+.has-location .location-content { pointer-events:none; }
+.has-location .location-controls { pointer-events:auto; }
+body .card.has-location { height:288px; }
+@media (max-width:400px) { body main > footer { gap:8px; align-items:center; } .tune-button { padding:8px; white-space:nowrap; } }
+body .card[aria-labelledby="event-title"] { height:224px; min-height:0; }
+body .card[aria-labelledby="event-title"] > div > div:first-child { gap:8px; }
+body .card[aria-labelledby="event-title"] > div > div:first-child > .grid { flex-shrink:0; }
+body #event-title { font-size:24px; }
+body .card[aria-labelledby="event-title"] .body-copy { font-size:12px; line-height:16px; }
+body .card[aria-labelledby="activity-title"] { height:224px; min-height:0; }
+body .card[aria-labelledby="activity-title"] > div { display:block; }
+body .card[aria-labelledby="activity-title"] > div > div:first-child { position:relative; }
+body .card[aria-labelledby="activity-title"] .mt-auto { position:absolute; right:0; bottom:0; }
+body .card[aria-labelledby="activity-title"] [aria-label="Weekly running chart"] { height:80px; padding:8px 0 16px; margin-top:8px; gap:8px; border:0; }
+body .day-bar { border-radius:4px 4px 0 0; background:#dce8ee; position:relative; }
+body .day-bar.bg-ink { background:#7ba7c1; }
+.day-bar::after { content:attr(data-day); position:absolute; top:100%; left:50%; transform:translateX(-50%); padding-top:4px; font-size:12px; line-height:16px; color:#92998f; }
+body .card[aria-labelledby="shader-title"] { height:224px; min-height:0; }
+body .card[aria-labelledby="shader-title"] > div:first-child { margin-bottom:16px; }
+body .shader { aspect-ratio:auto; height:96px; border-radius:16px; }
+body main > footer { margin-top:24px; }
+@media (min-width: 1024px) { body section.grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (min-width: 768px) and (max-width:1023px) { body section.grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:767px) { body main.mx-auto { padding:32px 16px 24px; } body section.grid { gap:16px; } body main > header h1.font-editorial { font-size:24px; line-height:32px; } body main > header.flex { margin-bottom:24px; } body main > header > div:last-child { display:none; } }

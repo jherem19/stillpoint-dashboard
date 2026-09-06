@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f8f7" />
+    <title>Stillpoint — Personal dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./vendor/dialkit/styles.css" />
+    <link rel="stylesheet" href="./polish.css" />
+    <link rel="stylesheet" href="./reference.css" />
+    <script defer src="./vendor/dialkit/browser.global.js"></script>
+    <script defer src="./vendor/motion/motion.js"></script>
+    <script defer src="./polish.js"></script>
+    <script defer src="./location.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              canvas: '#F8F8F7',
+              ink: '#20211F',
+              muted: '#777972',
+              line: '#E9E9E5',
+              sage: '#A9B8A5',
+              sand: '#E8DFD0',
+              night: '#1C1D1B'
+            },
+            borderRadius: { card: '24px' },
+            boxShadow: { soft: '0 1px 2px rgba(24, 26, 22, .025), 0 12px 36px rgba(24, 26, 22, .035)' }
+          }
+        }
+      };
+    </script>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      html { background: #f8f8f7; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #20211f;
+        background:
+          radial-gradient(circle at 8% -4%, rgba(232,223,208,.48), transparent 25rem),
+          radial-gradient(circle at 92% 10%, rgba(169,184,165,.20), transparent 28rem),
+          #f8f8f7;
+        font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      button, [contenteditable] { -webkit-tap-highlight-color: transparent; }
+      button:focus-visible, [contenteditable]:focus-visible {
+        outline: 2px solid #20211f;
+        outline-offset: 3px;
+      }
+      .font-editorial { font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-weight: 500; font-style: normal; }
+      .card {
+        position: relative;
+        overflow: hidden;
+        padding: 24px;
+        border: 1px solid rgba(32,33,31,.065);
+        border-radius: 24px;
+        background: rgba(255,255,255,.86);
+        box-shadow: 0 1px 2px rgba(24,26,22,.025), 0 12px 36px rgba(24,26,22,.035);
+        backdrop-filter: blur(18px);
+      }
+      .eyebrow { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #777972; }
+      .body-copy { font-size: 15px; line-height: 24px; }
+      .display { font-size: 24px; line-height: 32px; letter-spacing: -.025em; }
+      .icon-button {
+        display: inline-grid; place-items: center; width: 40px; height: 40px;
+        border: 1px solid #e9e9e5; border-radius: 999px; background: rgba(255,255,255,.72);
+        transition: transform .18s ease, background .18s ease;
+      }
+      .icon-button:hover { background: #fff; }
+      .timeline { height: 3px; overflow: hidden; border-radius: 99px; background: #ecece8; }
+      .timeline > span { display: block; height: 100%; border-radius: inherit; background: #20211f; }
+      .noise::after {
+        content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .11; mix-blend-mode: soft-light;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      }
+      .map-line { fill: none; stroke: rgba(255,255,255,.48); stroke-width: 1.2; }
+      .day-bar { transform-origin: bottom; animation: grow .65s cubic-bezier(.2,.8,.2,1) both; }
+      @keyframes grow { from { transform: scaleY(.05); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+    </style>
+  </head>
+  <body>
+    <main class="mx-auto max-w-[1480px] px-4 py-8 sm:px-8 lg:px-12 lg:py-12">
+      <header class="mb-8 flex items-end justify-between gap-6 px-1">
+        <div>
+          <p class="eyebrow mb-2">Stillpoint <span class="header-divider">/</span> Your everyday, together</p>
+          <h1 class="font-editorial text-[32px] leading-[40px] tracking-[-.035em] sm:text-[40px] sm:leading-[48px]">Good morning, Hector.</h1>
+        </div>
+        <div class="hidden items-center gap-3 sm:flex">
+          <span id="liveDate" class="text-[12px] font-medium text-muted"></span>
+          <span class="h-1.5 w-1.5 rounded-full bg-sage"></span>
+          <span class="text-[12px] font-medium text-muted">All systems quiet</span>
+        </div>
+      </header>
+
+      <section class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Personal dashboard widgets">
+        <!-- 01 Music -->
+        <article class="card min-h-[264px]" aria-labelledby="music-title">
+          <div class="flex h-full flex-col">
+            <div class="mb-6 flex items-start justify-between">
+              <div>
+                <p class="eyebrow mb-2">Now playing</p>
+                <h2 id="music-title" class="display font-editorial">LesAlpx</h2>
+                <p class="body-copy text-muted">Floating Points · Crush</p>
+              </div>
+              <div class="noise relative h-14 w-14 overflow-hidden rounded-[16px] bg-[conic-gradient(from_210deg,#d7bfa0,#68796c,#e8dfd0,#333b36,#d7bfa0)]"></div>
+            </div>
+            <div class="mt-auto">
+              <button id="trackSeek" class="timeline block w-full" aria-label="Seek track"><span id="musicProgress" style="width: 38%"></span></button>
+              <div class="mt-2 flex justify-between text-[12px] font-medium text-muted"><span id="elapsed">1:42</span><span>4:31</span></div>
+              <div class="mt-4 flex items-center justify-center gap-4">
+                <button class="icon-button h-8 w-8 border-0 bg-transparent" aria-label="Previous track"><i data-lucide="skip-back" class="h-4 w-4"></i></button>
+                <button id="playButton" class="icon-button h-12 w-12 border-ink bg-ink text-white hover:bg-ink" aria-label="Play music"><i id="playIcon" data-lucide="play" class="h-5 w-5 fill-current"></i></button>
+                <button class="icon-button h-8 w-8 border-0 bg-transparent" aria-label="Next track"><i data-lucide="skip-forward" class="h-4 w-4"></i></button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 02 Focus -->
+        <article class="card noise min-h-[264px] border-night bg-night text-white" aria-labelledby="focus-title">
+          <div class="relative z-10 flex h-full items-center gap-6">
+            <div id="focusDial" class="relative grid h-36 w-36 shrink-0 place-items-center rounded-full" style="background: conic-gradient(#dce8d8 var(--focus-progress, 0%), rgba(255,255,255,.09) 0)">
+              <div class="grid h-[126px] w-[126px] place-items-center rounded-full bg-night">
+                <div class="text-center">
+                  <div id="timer" class="text-[24px] font-medium leading-8 tracking-[-.04em]">25:00</div>
+                  <div class="mt-1 text-[12px] font-medium text-white/45">Deep work</div>
+                </div>
+              </div>
+            </div>
+            <div class="min-w-0">
+              <p class="eyebrow mb-2 !text-white/45">Focus</p>
+              <h2 id="focus-title" class="display font-editorial">One thing<br/>at a time.</h2>
+              <button id="timerButton" class="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12px] font-semibold text-night" aria-label="Start focus timer"><i data-lucide="play" class="h-3.5 w-3.5 fill-current"></i><span>Start</span></button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 03 Flight -->
+        <article class="card min-h-[264px]" aria-labelledby="flight-title">
+          <div class="mb-6 flex items-start justify-between">
+            <div><p class="eyebrow mb-2">Flight UA 214</p><h2 id="flight-title" class="display font-editorial">On time</h2></div>
+            <span class="rounded-full bg-[#eef2ec] px-3 py-1 text-[12px] font-semibold text-[#60705d]">Boarding 10:40</span>
+          </div>
+          <div class="flex items-end justify-between">
+            <div><div class="text-[24px] font-semibold tracking-[-.04em]">SFO</div><div class="text-[12px] text-muted">11:15 · Gate F12</div></div>
+            <i data-lucide="plane" class="mb-1 h-5 w-5 rotate-45 text-muted"></i>
+            <div class="text-right"><div class="text-[24px] font-semibold tracking-[-.04em]">JFK</div><div class="text-[12px] text-muted">19:48 · Gate 7</div></div>
+          </div>
+          <div class="mt-6"><div class="timeline relative"><span class="w-[27%]"></span><i class="absolute left-[27%] top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-ink shadow"></i></div><div class="mt-2 flex justify-between text-[12px] font-medium text-muted"><span>Scheduled</span><span>5h 33m</span></div></div>
+        </article>
+
+        <!-- 04 Location -->
+        <article class="card noise min-h-[248px] bg-[#8d9d8c] text-white" aria-labelledby="location-title">
+          <svg class="coastal-map absolute inset-0 h-full w-full" viewBox="0 0 460 280" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect width="460" height="280" fill="#d7e6e8"/>
+            <path d="M195 -20 Q175 30 205 72 Q220 105 199 134 Q174 170 207 199 Q231 218 211 260 L194 300 H480 V-20Z" fill="#edf0e5" stroke="#bdcecb" stroke-width="2"/>
+            <path d="M315 -20 Q268 78 305 117 T280 300 M460 89 Q333 62 247 133 T230 240 M380 0 Q340 70 389 165 T350 300" fill="none" stroke="#d5ddca" stroke-width="20" opacity=".55"/>
+            <path d="M258 -10 Q213 50 247 110 T242 210 L265 290" fill="none" stroke="white" stroke-width="6"/>
+            <path d="M258 -10 Q213 50 247 110 T242 210 L265 290" fill="none" stroke="#dbc8a3" stroke-width="2"/>
+            <path d="M228 80 L360 111 L402 89 M254 140 L335 172 L430 147 M248 200 L355 222 M311 104 L284 252 M362 120 L332 255" fill="none" stroke="#fff" stroke-width="3"/>
+            <circle cx="244" cy="142" r="28" fill="#739eae" opacity=".15"/><circle cx="244" cy="142" r="12" fill="white"/><circle cx="244" cy="142" r="7" fill="#709ba8"/>
+          </svg>
+          <div id="locationMap" hidden></div>
+          <div class="location-content relative z-10 flex h-full flex-col">
+            <div class="flex items-start justify-between"><div><p class="eyebrow mb-2 !text-white/60">Location · Live</p><h2 id="location-title" class="display font-editorial">Your corner of the world</h2><p id="locationDetail" class="body-copy text-white/70">Let your browser find you.</p></div></div>
+            <div class="location-actions mt-auto">
+              <p id="locationStatus" role="status">Your approximate area is shared with OpenStreetMap to show the map.</p>
+              <div class="location-controls"><button id="locateButton" type="button">Use my location <span aria-hidden="true">↗</span></button><a id="locationLink" hidden target="_blank" rel="noopener noreferrer">Open map ↗</a></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 05 Weather -->
+        <article class="card min-h-[248px]" aria-labelledby="weather-title">
+          <div class="flex items-start justify-between"><div><p class="eyebrow mb-2">Weather · Santiago</p><h2 id="weather-title" class="text-[24px] font-medium leading-8 tracking-[-.04em]">18°</h2><p class="body-copy text-muted">Clear, feels like 17°</p></div><i data-lucide="sun" class="h-8 w-8 stroke-[1.3] text-[#b59a63]"></i></div>
+          <div class="mt-8 grid grid-cols-5 gap-2 border-t border-line pt-5 text-center">
+            <div><p class="text-[12px] text-muted">Mon</p><i data-lucide="sun" class="mx-auto my-3 h-4 w-4 text-[#b59a63]"></i><p class="text-[12px] font-semibold">19°</p></div>
+            <div><p class="text-[12px] text-muted">Tue</p><i data-lucide="cloud-sun" class="mx-auto my-3 h-4 w-4 text-muted"></i><p class="text-[12px] font-semibold">17°</p></div>
+            <div><p class="text-[12px] text-muted">Wed</p><i data-lucide="cloud-rain" class="mx-auto my-3 h-4 w-4 text-[#7c91a1]"></i><p class="text-[12px] font-semibold">14°</p></div>
+            <div><p class="text-[12px] text-muted">Thu</p><i data-lucide="cloud" class="mx-auto my-3 h-4 w-4 text-muted"></i><p class="text-[12px] font-semibold">16°</p></div>
+            <div><p class="text-[12px] text-muted">Fri</p><i data-lucide="sun" class="mx-auto my-3 h-4 w-4 text-[#b59a63]"></i><p class="text-[12px] font-semibold">20°</p></div>
+          </div>
+        </article>
+
+        <!-- 06 Stories -->
+        <article class="card min-h-[320px] md:row-span-1" aria-labelledby="stories-title">
+          <div class="mb-4 flex items-center justify-between"><div><p class="eyebrow mb-2">Briefing</p><h2 id="stories-title" class="display font-editorial">Three stories</h2></div><button class="text-[12px] font-semibold text-muted hover:text-ink">View all</button></div>
+          <div class="divide-y divide-line">
+            <a href="#" class="group flex gap-3 py-4 first:pt-2"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#eef2ec]"><i data-lucide="sparkles" class="h-4 w-4 text-[#60705d]"></i></span><span><span class="block text-[15px] font-medium leading-5 group-hover:underline">Small models are learning to reason locally</span><span class="mt-1 block text-[12px] text-muted">Technology · 6 min</span></span></a>
+            <a href="#" class="group flex gap-3 py-4"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#f3eee6]"><i data-lucide="palette" class="h-4 w-4 text-[#92795b]"></i></span><span><span class="block text-[15px] font-medium leading-5 group-hover:underline">Why quiet interfaces are getting warmer</span><span class="mt-1 block text-[12px] text-muted">Design · 4 min</span></span></a>
+            <a href="#" class="group flex gap-3 py-4 pb-0"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#edf0f2]"><i data-lucide="waves" class="h-4 w-4 text-[#657985]"></i></span><span><span class="block text-[15px] font-medium leading-5 group-hover:underline">The long return of California kelp</span><span class="mt-1 block text-[12px] text-muted">Environment · 8 min</span></span></a>
+          </div>
+        </article>
+
+        <!-- 07 Inbox -->
+        <article class="card min-h-[320px]" aria-labelledby="inbox-title">
+          <div class="mb-4 flex items-center justify-between"><div><p class="eyebrow mb-2">Agents</p><h2 id="inbox-title" class="display font-editorial">Inbox</h2></div><span class="grid h-7 min-w-7 place-items-center rounded-full bg-ink px-2 text-[12px] font-semibold text-white">3</span></div>
+          <div class="space-y-1">
+            <button class="inbox-item flex w-full items-center gap-3 rounded-2xl p-3 text-left hover:bg-canvas" data-read="false"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#dfe9dc] text-[12px] font-semibold">S</span><span class="min-w-0 flex-1"><span class="flex justify-between gap-2"><strong class="truncate text-[15px] font-semibold">Scout</strong><time class="text-[12px] text-muted">2m</time></span><span class="block truncate text-[12px] text-muted">Found 4 roles matching your profile.</span></span><span class="unread h-2 w-2 rounded-full bg-[#71866d]"></span></button>
+            <button class="inbox-item flex w-full items-center gap-3 rounded-2xl p-3 text-left hover:bg-canvas" data-read="false"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#eee5d9] text-[12px] font-semibold">M</span><span class="min-w-0 flex-1"><span class="flex justify-between gap-2"><strong class="truncate text-[15px] font-semibold">Mira</strong><time class="text-[12px] text-muted">18m</time></span><span class="block truncate text-[12px] text-muted">Your portfolio audit is ready.</span></span><span class="unread h-2 w-2 rounded-full bg-[#71866d]"></span></button>
+            <button class="inbox-item flex w-full items-center gap-3 rounded-2xl p-3 text-left hover:bg-canvas" data-read="true"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#e5e9ec] text-[12px] font-semibold">K</span><span class="min-w-0 flex-1"><span class="flex justify-between gap-2"><strong class="truncate text-[15px] font-medium">Kite</strong><time class="text-[12px] text-muted">1h</time></span><span class="block truncate text-[12px] text-muted">Weekly activity has been summarized.</span></span></button>
+          </div>
+        </article>
+
+        <!-- 08 Quick note -->
+        <article class="card min-h-[320px] bg-[#f4efe5]" aria-labelledby="note-title">
+          <div class="flex h-full flex-col">
+            <div class="flex items-start justify-between"><div><p class="eyebrow mb-2">Quick note</p><h2 id="note-title" class="sr-only">Editable quick note</h2></div><span id="draftBadge" class="rounded-full border border-[#d8cbb7] bg-white/40 px-3 py-1 text-[12px] font-semibold text-[#796b57]">Draft</span></div>
+            <div id="quickNote" contenteditable="true" role="textbox" aria-label="Quick note" data-placeholder="Write a thought…" class="font-editorial mt-5 min-h-[152px] cursor-text text-[24px] italic leading-8 tracking-[-.025em] text-[#4c463d] focus:outline-none">Remember: clarity is kindness. Remove the extra step before adding the clever one.</div>
+            <div class="mt-auto flex items-center justify-between text-[12px] font-medium text-[#8a7e6c]"><span id="noteStatus">Edited just now</span><i data-lucide="pen-line" class="h-4 w-4"></i></div>
+          </div>
+        </article>
+
+        <!-- 09 Mood board -->
+        <article class="card min-h-[360px] md:col-span-2 xl:col-span-1" aria-labelledby="mood-title">
+          <div class="mb-5 flex items-center justify-between"><div><p class="eyebrow mb-2">Collected inspiration</p><h2 id="mood-title" class="display font-editorial">Mood board</h2></div><span class="collection-count">04</span></div>
+          <div class="grid h-[248px] grid-cols-2 grid-rows-2 gap-2">
+            <div class="row-span-2 overflow-hidden rounded-[16px] bg-[#b9b0a3]"><img class="h-full w-full object-cover grayscale-[18%] transition duration-500 hover:scale-[1.03]" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=82" alt="Foggy coastal landscape" /></div>
+            <div class="overflow-hidden rounded-[16px] bg-[#dad3c7]"><img class="h-full w-full object-cover grayscale-[12%] transition duration-500 hover:scale-[1.03]" src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=600&q=82" alt="Minimal interior detail" /></div>
+            <div class="grid grid-cols-2 gap-2"><div class="overflow-hidden rounded-[16px] bg-[#889687]"><img class="h-full w-full object-cover transition duration-500 hover:scale-[1.04]" src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=400&q=82" alt="Green mountain lake" /></div><div class="overflow-hidden rounded-[16px] bg-[#c9b99e]"><img class="h-full w-full object-cover grayscale-[20%] transition duration-500 hover:scale-[1.04]" src="https://images.unsplash.com/photo-1531988042231-d39a9cc12a9a?auto=format&fit=crop&w=400&q=82" alt="Ceramic objects" /></div></div>
+          </div>
+        </article>
+
+        <!-- 10 Up next -->
+        <article class="card min-h-[264px]" aria-labelledby="event-title">
+          <div class="flex h-full flex-col">
+            <div class="flex items-start justify-between"><div><p class="eyebrow mb-2">Up next · 10:00</p><h2 id="event-title" class="display font-editorial">Portfolio review</h2><p class="body-copy mt-1 text-muted">with Elena & Marco · 45 min</p></div><div class="grid h-12 w-12 place-items-center rounded-2xl bg-[#eff1ed]"><span class="text-center text-[12px] font-semibold leading-4"><small class="block font-medium text-muted">SEP</small>06</span></div></div>
+            <div class="mt-auto flex items-center justify-between border-t border-line pt-5"><div class="flex -space-x-2"><span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-[#d7c7b4] text-[12px] font-semibold">H</span><span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-[#b6c1b3] text-[12px] font-semibold">E</span><span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white bg-[#c4cbd0] text-[12px] font-semibold">M</span></div><button class="rounded-full bg-ink px-4 py-2 text-[12px] font-semibold text-white hover:bg-black">Join call</button></div>
+          </div>
+        </article>
+
+        <!-- 11 Activity -->
+        <article class="card min-h-[264px]" aria-labelledby="activity-title">
+          <div class="flex h-full gap-6">
+            <div class="flex min-w-[112px] flex-col"><p class="eyebrow mb-2">Activity</p><h2 id="activity-title" class="text-[24px] font-semibold leading-8 tracking-[-.04em]">24.8 <span class="text-[15px] font-medium text-muted">km</span></h2><p class="mt-1 text-[12px] text-muted">This week</p><div class="mt-auto flex items-center gap-1 text-[12px] font-semibold text-[#667962]"><i data-lucide="trending-up" class="h-4 w-4"></i>12% vs last</div></div>
+            <div class="flex flex-1 items-end justify-between gap-2 border-b border-line pb-5 pt-8" aria-label="Weekly running chart">
+              <div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-[#dfe5dc]" style="height:26%"></span></div><div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-[#dfe5dc]" style="height:48%;animation-delay:.05s"></span></div><div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-[#a9b8a5]" style="height:84%;animation-delay:.1s"></span></div><div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-[#dfe5dc]" style="height:35%;animation-delay:.15s"></span></div><div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-[#c3cec0]" style="height:67%;animation-delay:.2s"></span></div><div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-ink" style="height:100%;animation-delay:.25s"></span></div><div class="flex h-full flex-1 items-end"><span class="day-bar w-full rounded-t-lg bg-[#ecece8]" style="height:16%;animation-delay:.3s"></span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 12 Shaders -->
+        <article class="card min-h-[264px]" aria-labelledby="shader-title">
+          <div class="mb-5 flex items-center justify-between"><div><p class="eyebrow mb-2">Lab</p><h2 id="shader-title" class="display font-editorial">Shader studies</h2></div><span class="text-[12px] font-medium text-muted">04</span></div>
+          <div class="grid grid-cols-4 gap-2">
+            <button class="shader noise aspect-[.78] overflow-hidden rounded-[16px] bg-[radial-gradient(circle_at_30%_30%,#e9d9c2,transparent_35%),radial-gradient(circle_at_70%_68%,#66766b,transparent_48%),#b5aa9c] transition hover:-translate-y-1" aria-label="Sand shader"></button>
+            <button class="shader noise aspect-[.78] overflow-hidden rounded-[16px] bg-[repeating-radial-gradient(ellipse_at_10%_80%,#dedbd3_0_4px,#7d8981_5px_9px,#29302d_10px_14px)] transition hover:-translate-y-1" aria-label="Ripple shader"></button>
+            <button class="shader noise aspect-[.78] overflow-hidden rounded-[16px] bg-[conic-gradient(from_140deg_at_55%_48%,#1f2422,#a5b3a1,#eee8dc,#7f6d5d,#1f2422)] transition hover:-translate-y-1" aria-label="Glass shader"></button>
+            <button class="shader noise aspect-[.78] overflow-hidden rounded-[16px] bg-[linear-gradient(145deg,#ebdfca_0%,#697a70_48%,#252927_50%,#b3a38b_100%)] transition hover:-translate-y-1" aria-label="Fold shader"></button>
+          </div>
+        </article>
+      </section>
+
+      <footer class="mt-8 flex items-center justify-between px-1 text-[12px] font-medium text-muted"><span>Stillpoint · Interactive demo<br><span class="demo-caption">Sample data · Location uses your browser</span></span><button id="tuneButton" aria-expanded="false" aria-controls="tuningPanel" class="tune-button"><i data-lucide="sliders-horizontal" class="h-4 w-4"></i>Tune interface</button></footer>
+    </main>
+    <aside id="tuningPanel" hidden aria-label="Interface settings">
+      <div class="tuning-heading"><span>Interface studio</span><button id="closeTuning" aria-label="Close interface settings">×</button></div>
+      <div id="dialkitHost"></div>
+      <p class="tuning-caption">Changes save on this device. Radius and padding stay at 24px.</p>
+    </aside>
+
+    <script>
+      lucide.createIcons();
+
+      const dateEl = document.getElementById('liveDate');
+      dateEl.textContent = new Intl.DateTimeFormat('en', { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
+
+      const playButton = document.getElementById('playButton');
+      const progressEl = document.getElementById('musicProgress');
+      const elapsedEl = document.getElementById('elapsed');
+      let isPlaying = false;
+      let trackSeconds = 102;
+      let trackInterval;
+      function renderTrack() {
+        progressEl.style.width = `${(trackSeconds / 271) * 100}%`;
+        elapsedEl.textContent = `${Math.floor(trackSeconds / 60)}:${String(trackSeconds % 60).padStart(2, '0')}`;
+      }
+      playButton.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        playButton.setAttribute('aria-label', isPlaying ? 'Pause music' : 'Play music');
+        playButton.innerHTML = `<i data-lucide="${isPlaying ? 'pause' : 'play'}" class="h-5 w-5 fill-current"></i>`;
+        lucide.createIcons();
+        clearInterval(trackInterval);
+        if (isPlaying) trackInterval = setInterval(() => { trackSeconds = (trackSeconds + 1) % 272; renderTrack(); }, 1000);
+      });
+      document.getElementById('trackSeek').addEventListener('click', (event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        trackSeconds = Math.round(Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)) * 271);
+        renderTrack();
+      });
+
+      const timerEl = document.getElementById('timer');
+      const timerButton = document.getElementById('timerButton');
+      const focusCard = timerEl.closest('article');
+      let remaining = 25 * 60;
+      let timerRunning = false;
+      let timerInterval;
+      function renderTimer() {
+        timerEl.textContent = `${String(Math.floor(remaining / 60)).padStart(2, '0')}:${String(remaining % 60).padStart(2, '0')}`;
+        focusCard.style.setProperty('--focus-progress', `${((1500 - remaining) / 1500) * 100}%`);
+      }
+      timerButton.addEventListener('click', () => {
+        timerRunning = !timerRunning;
+        timerButton.innerHTML = `<i data-lucide="${timerRunning ? 'pause' : 'play'}" class="h-3.5 w-3.5 fill-current"></i><span>${timerRunning ? 'Pause' : 'Resume'}</span>`;
+        lucide.createIcons();
+        clearInterval(timerInterval);
+        if (timerRunning) timerInterval = setInterval(() => {
+          if (remaining > 0) { remaining--; renderTimer(); } else { clearInterval(timerInterval); timerRunning = false; }
+        }, 1000);
+      });
+
+      document.querySelectorAll('.inbox-item').forEach(item => item.addEventListener('click', () => {
+        item.dataset.read = 'true';
+        item.querySelector('.unread')?.remove();
+        item.querySelector('strong')?.classList.replace('font-semibold', 'font-medium');
+        const unread = document.querySelectorAll('.inbox-item[data-read="false"]').length;
+        document.querySelector('#inbox-title').parentElement.parentElement.querySelector('span').textContent = unread;
+      }));
+
+      const note = document.getElementById('quickNote');
+      try {
+        const savedNote = localStorage.getItem('stillpoint-note');
+        if (savedNote !== null) note.textContent = savedNote;
+      } catch { /* The note remains editable when storage is unavailable. */ }
+      let saveDelay;
+      note.addEventListener('input', () => {
+        document.getElementById('noteStatus').textContent = 'Saving…';
+        clearTimeout(saveDelay);
+        saveDelay = setTimeout(() => {
+          try {
+            localStorage.setItem('stillpoint-note', note.textContent.trim());
+            document.getElementById('noteStatus').textContent = 'Saved locally';
+          } catch {
+            document.getElementById('noteStatus').textContent = 'Kept for this session';
+          }
+        }, 450);
+      });
+    </script>
+  </body>
+</html>

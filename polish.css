@@ -1,0 +1,30 @@
+/* Shared visual tokens. Structural dimensions are intentionally fixed. */
+:root { --surface-blur: 36px; --surface-opacity: .035; --surface-border: .065; --accent: #a9b8a5; }
+body .card {
+  box-shadow: 0 1px 2px rgba(24,26,22,.025), 0 12px var(--surface-blur) rgba(24,26,22,var(--surface-opacity));
+  border-color: rgba(32,33,31,var(--surface-border));
+}
+body .font-editorial { font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-style: normal; }
+body #quickNote { font-weight: 400; letter-spacing: -.035em; }
+body .day-bar { animation: none; }
+body .shader, body .card img { transition: none; transform: none; }
+body .shader:first-child { background: radial-gradient(circle at 30% 30%,#e9d9c2,transparent 35%),radial-gradient(circle at 70% 68%,#66766b,transparent 48%),#b5aa9c; }
+.card .bg-sage, .card .unread { background-color: var(--accent); }
+.timeline > span { transition: width .7s linear; }
+#timer { font-variant-numeric: tabular-nums; }
+#focusRing { --focus-progress: 0%; }
+@property --focus-progress { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+article[aria-labelledby="focus-title"] { transition: --focus-progress .8s linear; }
+.inbox-item { transition: background-color .2s, opacity .2s; }
+.inbox-item[data-read="true"] { opacity: .65; }
+#quickNote:focus-visible { outline: 2px solid #a79882; outline-offset: 8px; border-radius: 8px; }
+.tune-button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e9e9e5; border-radius: 24px; background: white; color: #454740; }
+.tune-button:hover { background: #efefec; }
+#tuningPanel { position: fixed; z-index: 1000; right: 24px; bottom: 24px; width: 304px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 48px); overflow: auto; border: 1px solid #e2e2df; border-radius: 24px; background: #f5f5f3; box-shadow: 0 8px 40px #20211f15; color: #20211f; }
+#tuningPanel[hidden] { display: none; }
+.tuning-heading { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px 8px; font-size: 12px; font-weight: 600; }
+.tuning-heading button { width: 32px; height: 32px; border-radius: 50%; font-size: 24px; font-weight: 400; }
+.tuning-heading button:hover { background: #e9e9e5; }
+.tuning-caption { padding: 16px 24px 24px; margin: 0; font-size: 12px; line-height: 16px; color: #777972; }
+@media (max-width: 600px) { #tuningPanel { right: 16px; bottom: 16px; } }
+@media (prefers-reduced-motion: reduce) { .timeline > span, article[aria-labelledby="focus-title"], .inbox-item { transition: none; } }
